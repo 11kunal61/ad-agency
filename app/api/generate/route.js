@@ -3,45 +3,28 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    // 1. Setup Gemini
+    const data = await req.formData();
+    const file = data.get("file");
+    const prompt = data.get("prompt");
+    
+    if (!file) return NextResponse.json({ error: "No file found" }, { status: 400 });
+
+    // AI Logic
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // 2. Parse Input
-    const formData = await req.formData();
-    const file = formData.get("file");
-    const prompt = formData.get("prompt");
-
-    if (!file || !prompt) {
-      return NextResponse.json({ error: "Missing file or prompt" }, { status: 400 });
-    }
-
-    // 3. Prepare Image for AI
+    
     const bytes = await file.arrayBuffer();
-    const base64Data = Buffer.from(bytes).toString("base64");
-
-    // 4. Ask Gemini for the Strategy
-    const aiPrompt = `
-      You are a marketing expert. Analyze this product image for the event: '${prompt}'.
-      Return a JSON object with:
-      1. "caption": A catchy Instagram caption with emojis.
-      2. "hook": A short 3-word hook for a video overlay (e.g. "SALE IS LIVE").
-      3. "color": A hex color code matching the product (e.g. #FF0000).
-    `;
-
+    const b64 = Buffer.from(bytes).toString("base64");
+    
     const result = await model.generateContent([
-      aiPrompt,
-      { inlineData: { data: base64Data, mimeType: file.type } }
+      `Analyze this image for event '${prompt}'. Return JSON: { "caption": "...", "hook": "...", "color": "#HEX" }`,
+      { inlineData: { data: b64, mimeType: file.type } }
     ]);
 
-    // 5. Clean and Parse Response
-    const text = result.response.text().replace(/```json|```/g, "").trim();
-    const strategy = JSON.parse(text);
-
-    return NextResponse.json({ success: true, data: strategy });
-
-  } catch (error) {
-    console.error("AI Error:", error);
-    return NextResponse.json({ error: "AI Failed" }, { status: 500 });
+    const jsonText = result.response.text().replace(/```json|```/g, "").trim();
+    return NextResponse.json(JSON.parse(jsonText));
+    
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
