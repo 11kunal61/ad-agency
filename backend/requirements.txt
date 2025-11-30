@@ -7,3 +7,4 @@ moviepy
 rembg
 numpy
 requests
+onnxruntime
