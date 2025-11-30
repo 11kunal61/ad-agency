@@ -18,7 +18,8 @@ export default function Home() {
 
     // 🔴 IMPORTANT: This looks for the Vercel Environment Variable. 
     // If running locally, it falls back to localhost.
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+    // 🔴 WE ARE HARDCODING THE LINK TO FORCE IT TO WORK
+    const apiUrl = "https://ad-agency-aek9.onrender.com";
 
     try {
         const res = await fetch(`${apiUrl}/generate`, {
@@ -86,4 +87,4 @@ export default function Home() {
       </div>
     </div>
   );
-}
+} 
