@@ -24,7 +24,7 @@ app.add_middleware(
 
 # 2. SETUP GOOGLE CLIENT (Reads from Render Env Vars)
 # Make sure you set GOOGLE_API_KEY in Render settings later!
-client = genai.Client(api_key=os.environ.get("AIzaSyDTnS6HczS0GkIcRATs6dMhAsCIBj4gXfU"))
+client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 
 @app.get("/")
 def home():
