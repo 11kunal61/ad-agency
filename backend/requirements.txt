@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+google-genai
+pillow
+moviepy
+rembg
+numpy
+requests
